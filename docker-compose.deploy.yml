@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  backend:
+    image: registry.gitlab.propulsion-home.ch/full-stack/batch-24-may-2023/final-projects/fairq:master
+    ports:
+      - "8001:8000"
+    env_file:
+      - ./envs/prod.env
+      - ./envs/secrets.env
+    volumes:
+      - static-files:/static-files
+      - media-files:/media-files
+      - build:/frontend/dist
+    command: "sh /scripts/prod.sh"
+    depends_on:
+      - postgres
+
+  queue:
+    image: registry.gitlab.propulsion-home.ch/full-stack/batch-24-may-2023/final-projects/fairq:master
+    env_file:
+      - ./envs/prod.env
+      - ./envs/secrets.env
+    volumes:
+      - static-files:/static-files
+      - media-files:/media-files
+      - build:/frontend/dist
+    command: "python manage.py qcluster"
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:latest
+    env_file:
+      - ./envs/prod.env
+      - ./envs/secrets.env
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+
+  nginx:
+    image: nginx:stable-alpine3.17-slim
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - static-files:/static-files
+      - media-files:/media-files
+      - /etc/letsencrypt:/etc/letsencrypt
+      - build:/build
+
+volumes:
+  postgres_db:
+  media-files:
+  static-files:
+  build:

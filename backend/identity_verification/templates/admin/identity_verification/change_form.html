@@ -1,0 +1,95 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/calendar.js' %}"></script>
+    <style>
+        /* The Modal (background) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.9);
+        }
+
+        /* Modal Content (image) */
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+        }
+
+        /* Transparent sidebar */
+        .sidebar-open .sidebar {
+            background-color: transparent;
+        }
+
+        @keyframes zoom {
+            from {transform:scale(0)}
+            to {transform:scale(1)}
+        }
+    </style>
+
+    <script>
+        function openModal(modalId, imgId) {
+            var modal = document.getElementById(modalId);
+            var img = document.getElementById(imgId);
+            var modalImg = modal.getElementsByTagName('img')[0];
+            modal.style.display = "block";
+            modalImg.src = img.src;
+        }
+
+        function closeModal(modalId) {
+            var modal = document.getElementById(modalId);
+            modal.style.display = "none";
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div id="content-main">
+        {% if original %}
+        <div>
+            <h2>{{ original }}</h2>
+            {% if original.file_front %}
+            <img id="frontImg" class="large-image" src="{{ original.file_front.url }}" alt="Front Side" onclick="openModal('frontModal', 'frontImg')">
+
+            <!-- The Modal -->
+            <div id="frontModal" class="modal" onclick="closeModal('frontModal')">
+                <!-- The Close Button -->
+                <span class="close">&times;</span>
+
+                <!-- Modal Content (The Image) -->
+                <img class="modal-content" id="img01">
+            </div>
+            {% endif %}
+
+            {% if original.file_back %}
+            <img id="backImg" class="large-image" src="{{ original.file_back.url }}" alt="Back Side" onclick="openModal('backModal', 'backImg')">
+
+            <!-- The Modal -->
+            <div id="backModal" class="modal" onclick="closeModal('backModal')">
+                <!-- The Close Button -->
+                <span class="close">&times;</span>
+
+                <!-- Modal Content (The Image) -->
+                <img class="modal-content" id="img02">
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        {{ block.super }}
+    </div>
+{% endblock %}
